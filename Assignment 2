@@ -1,0 +1,51 @@
+(* Question 1. *)
+
+let rec pairlists (l1, l2) =
+  if l1 = [] then []
+  else if  List.length l1 != List.length l2 then []
+  else
+    ((List.hd l1),(List.hd l2)) :: pairlists((List.tl l1),(List.tl l2))
+;;
+
+let wmean weights data = 
+  let l = List.map(fun pair -> fst pair *. snd pair)(pairlists (weights,data))
+  in
+  ((sumlist l)/.(sumlist weights))
+;;
+
+(* Question 2. *)
+
+let rec memberof (n, l) =
+  match l with
+  |[]->false
+  |x::xs -> if x = n then true
+      else memberof (n,xs)
+;;
+open List
+    
+let rec remove (item, lst) =
+  if memberof(item,lst)=false then lst
+  else if item = List.hd lst then remove(item,(tl lst))
+  else (hd lst)::remove(item,(tl lst)) ;;
+
+(* Question 3. *)
+
+let find_max l = 
+  match l with
+    [] -> 0
+  |x::xs ->  let rec helper (a,b) =
+               match b with 
+                 [] -> a
+               |x'::xs' -> let a' = if x' > a then x' else a in 
+                   let b' = xs'
+                   in helper (a',b')
+      in helper (x,xs) 
+(* Question 4. *)
+        
+        
+let rec selsort l = 
+  if l=[] then []
+  else
+    (find_max l)::selsort(remove((find_max l),l))
+
+;;
