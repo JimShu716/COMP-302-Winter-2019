@@ -1,0 +1,35 @@
+
+let mysqrt (x:float) = 
+  let rec loop1 (x, g) =
+    if close( square g, x)  then g
+    else loop1 (x, (g +. (x/.g) )/. 2.0)
+  in
+  loop1 (x,1.00) ;;
+
+
+
+
+let cube_root(x:float)=
+  let rec loop2 (x, g )=
+    if close( cube g, x) then g
+    else loop2 (x, ((2.0 *. g +. (x /. (g *. g)))/. 3.0))
+  in 
+  loop2( x, 1.00);;
+
+
+
+let fast_exp(base, power)=
+  let rec loop3 base power n=
+    if base = 0 then 0
+    else
+    if power = 0 then n
+    else
+    if power =1 then base * n
+    else
+    if odd power
+    then loop3 (base*base) ((power-1)/2) (n*base)
+    else 
+      loop3 (base * base) (power/2) n
+  in
+  loop3  base power 1;;
+
