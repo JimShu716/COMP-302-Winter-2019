@@ -1,0 +1,59 @@
+
+
+exception NotImplemented;;
+
+let rec memberof (n, l) =
+  match l with
+  | [] -> false
+  | x :: xs -> if x = n then true else memberof (n, xs)
+;;
+
+let remove (item, lst) =
+  List.filter (fun u -> not (u = item)) lst
+
+(* Question 1. *)
+
+
+
+let rec common (l1,l2) = 
+  match l1 with 
+  |[] -> [] 
+  | x::xs -> if memberof(x,l2) then x::common(xs,remove (x,l2)) 
+      else common(xs,l2)
+                                           
+;;
+(* Question 2. Mergesort requires that you use recursion.  Using List.sort or
+some other sort defeats the whole purpose.  This question is for the
+implementation of split.*)
+
+let rec split l = 
+  match l with
+  | [] -> [],[]
+  | a::b::t ->
+      let x,y = split t in
+      a::x, b::y
+  | x::[] -> [x],[]
+;;
+  
+
+(* Question 3 Here you implement merge. *)
+
+let rec merge twolists =
+  match twolists with
+  |([],[])->[]
+  |([],y::ys)-> y::ys
+  |(x::xs,[])-> x::xs
+  |(x::xs,y::ys) -> if x < y then x::merge(xs,y::ys)
+      else y::merge(x::xs, ys)
+;;
+
+
+(* Question 4 Finally you combine split and merge and use them to implement mergesort. *)
+
+let rec mergesort l =
+  match l with
+    [] ->[] 
+  | [_] as list -> list
+  |x::xs -> let l1,l2 = split l
+      in merge(mergesort l1, mergesort l2)
+;;
