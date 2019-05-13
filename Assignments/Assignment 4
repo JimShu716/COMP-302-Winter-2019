@@ -1,0 +1,55 @@
+exception NotImplemented;;
+
+type 'a tree =
+  Empty | Node of 'a tree * 'a * 'a tree
+;;
+
+let deriv((f: float -> float), (dx: float)) =
+  fun (x:float) -> (((f (x +. dx)) -. (f x))/.dx)
+;;
+
+let iterSum(f, (lo:float), (hi:float), inc) =
+  let rec helper((x:float), (result:float)) =
+    if (x > hi) then result
+    else helper((inc x), (f x) +. result)
+  in
+  helper(lo,0.0)
+;;
+
+let integral((f: float -> float),(lo:float),(hi:float),(dx:float)) =
+  let delta (x:float) = x +. dx in
+  dx *. iterSum(f,(lo +. (dx/.2.0)), hi, delta)
+;;
+
+
+(* Question 1 *)
+
+let rec mapTree f (t: 'a tree) =
+  match t with
+    Empty ->Empty
+  |Node(l,i,r) -> Node((mapTree f l),(f i),(mapTree f r))
+;;
+
+(* Question 2. *)
+
+let rec halfint (f, (epsilon : float)) ((negValue : float), (posValue : float)) =
+  let half = (posValue +. negValue)/.2.0 in
+  if abs_float(f half) < epsilon then half
+  else if (f half) >0.0 then halfint (f, epsilon) (negValue,half) 
+  else halfint (f, epsilon) (half, posValue)
+;;
+
+(* Question 3. *)
+
+let rec newton (f, (epsilon:float), (dx:float)) (guess:float) =
+  let close x y = abs_float (x -. y) < epsilon in
+  let improve (guess:float) = guess -.((f guess)/.(deriv (f, dx) guess)) in
+  if close (f guess) 0.0 then guess
+  else newton (f,epsilon, dx) (improve guess)
+;;
+
+(* Question 4. *)
+
+let indIntegral (f, (dx:float)) =
+  fun( x:float) -> integral (f, 0.0, x, dx)
+;;
