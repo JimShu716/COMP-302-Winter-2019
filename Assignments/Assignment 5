@@ -1,0 +1,93 @@
+exception NotImplemented;;
+
+type country = string;;
+type chart = (country * country) list;;
+type colour = country list;;
+type colouring = colour list;;
+
+(*
+Notice that this is a mutually recursive definition. 
+Each type mentions the other one. 
+The keyword "and" is used for mutually recursive definitions.
+*)
+
+type cell = { data : int; next : rlist}
+and rlist = cell option ref;;
+
+(* This converts an RList to an ordinary list. *)
+let rec displayList (c : rlist) =
+  match !c with
+    | None -> []
+    | Some { data = d; next = l } -> d :: (displayList l);;
+
+let cell2rlist (c:cell):rlist = ref (Some c);;
+
+let smaller ((x:int), (y:int)) = x < y;;
+let bigger ((x: int), (y: int)) = x > y;;
+
+
+(* Question 1.1 *)
+
+
+let areNeighbours ct1 ct2 (cht : chart) = 
+  
+  if  List.mem (ct1,ct2) cht then List.mem (ct1,ct2) cht
+  else List.mem (ct2 ,ct1) cht 
+    
+;;
+
+(* Question 1.2 *)
+
+let canBeExtBy (col:colour) (ct: country) (ch : chart) =
+  let rec helper col ct ch =
+    match col with 
+    | [] -> true
+    | x::xs -> if areNeighbours x ct ch then false
+        else helper xs ct ch
+  in helper col ct ch
+      
+;;
+
+(* Question 1.3 *)
+
+let rec extColouring (cht: chart) (colours : colouring) (cntry : country) = 
+  match colours with
+    [] -> [[cntry]]
+  |x :: xs -> if canBeExtBy x cntry cht then  
+        let a = cntry :: x in a ::xs
+      else x ::extColouring cht xs cntry
+          
+;;
+
+(* Question 1.4 *)
+
+let rec removeDuplicates lst =
+  let duplicate  l x =
+    if List.mem x l then  l else x :: l
+  in List.rev(List. fold_left duplicate [] lst)
+;;
+
+(* Question 1.5 *)
+
+let countriesInChart (cht: chart) = 
+  let rec get chart =
+    match chart with
+    | [] -> []
+    |(x,y)::xs -> x::y::(get xs)
+  in removeDuplicates ( get cht)
+;;
+
+(* Quesiton 1.6 *)
+
+let colourTheCountries (cht : chart) =
+  List.fold_left( fun col x -> extColouring cht col x)[]  ( countriesInChart cht)
+;;
+
+(* Question 2 *)
+
+let rec insert comp (item: int) (list: rlist) =
+  match !list with
+  |None -> list:= Some { data = item; next = ref None} 
+  |Some c -> if comp(item,c.data) then list:= Some { data = item; next = ref (Some c)}
+      else insert comp item c.next                                  
+;;
